@@ -17,6 +17,6 @@ public class HolidayPackage {
     @Column(name = "packageInformation")
     private String packageInformation;
     @Column(name = "packagePrice")
-    private String packagePrice;
+    private Integer packagePrice;
 
 }

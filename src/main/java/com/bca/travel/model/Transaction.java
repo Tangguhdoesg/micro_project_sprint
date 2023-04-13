@@ -23,5 +23,7 @@ public class Transaction {
     private Integer totalPrice;
     @Column(name = "transactionDate")
     private Timestamp transactionDate;
+    @Column(name = "quantity")
+    private Integer quantity;
 
 }
