@@ -28,5 +28,9 @@ public class Customer {
     private String cardCCV;
     @Column(name = "card_type")
     private String cardType;
+    @Column(name="crypto_wallet_id")
+    private Integer cryptoWalletId;
+    
+    
 
 }

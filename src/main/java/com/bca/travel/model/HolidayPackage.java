@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table
+@Table(name="holiday_package")
 public class HolidayPackage {
 
     @Id
