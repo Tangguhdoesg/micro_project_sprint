@@ -30,6 +30,10 @@ public class Customer {
     private String cardType;
     @Column(name="crypto_wallet_id")
     private Integer cryptoWalletId;
+    @Column(name="account_number")
+    private Integer accountNumber;
+    
+    
     
     
 

@@ -19,18 +19,39 @@ import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 
-import com.bca.travel.model.Transaction;
+import com.bca.travel.model.CCPaymentEntity;
+import com.bca.travel.model.CryptoPaymentEntity;
 
 @EnableKafka
 @Configuration
 public class KafkaConfig {
 	
 	@Bean
-    public ProducerFactory<String, Transaction>
-    producerFactory()
+    public ProducerFactory<String, CryptoPaymentEntity>
+    producerFactoryCrypto()
     {
-        // Create a map of a string
-        // and object
+        Map<String, Object> config
+            = new HashMap<>();
+  
+        config.put(
+            ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
+            "127.0.0.1:9092");
+  
+        config.put(
+            ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
+            StringSerializer.class);
+  
+        config.put(
+            ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
+            JsonSerializer.class);
+  
+        return new DefaultKafkaProducerFactory<>(config);
+    }
+	
+	@Bean
+    public ProducerFactory<String, CCPaymentEntity>
+    producerFactoryCard()
+    {
         Map<String, Object> config
             = new HashMap<>();
   
@@ -50,15 +71,22 @@ public class KafkaConfig {
     }
   
     @Bean
-    public KafkaTemplate<String, Transaction>
-    kafkaTemplate(){
+    public KafkaTemplate<String, CryptoPaymentEntity>
+    kafkaTemplateCrypto(){
         return new KafkaTemplate<>(
-            producerFactory());
+        		producerFactoryCrypto());
+    }
+    
+    @Bean
+    public KafkaTemplate<String, CCPaymentEntity>
+    kafkaTemplateCC(){
+        return new KafkaTemplate<>(
+        		producerFactoryCard());
     }
 	
 	@Bean
-	public ConsumerFactory<String, Transaction> transactionConsumer(){
-		JsonDeserializer<Transaction> deserialize = new JsonDeserializer<>(Transaction.class);
+	public ConsumerFactory<String, CryptoPaymentEntity> cryptoFactory(){
+		JsonDeserializer<CryptoPaymentEntity> deserialize = new JsonDeserializer<>(CryptoPaymentEntity.class);
 		deserialize.setRemoveTypeHeaders(false);
 		deserialize.addTrustedPackages("*");
 		deserialize.setUseTypeMapperForKey(true);
@@ -86,11 +114,47 @@ public class KafkaConfig {
 	}
 	
 	@Bean
-    public ConcurrentKafkaListenerContainerFactory<String,Transaction> transactionListener()
-    {
-        ConcurrentKafkaListenerContainerFactory<String,Transaction> factory
+	public ConsumerFactory<String, CCPaymentEntity> ccFactory(){
+		JsonDeserializer<CCPaymentEntity> deserialize = new JsonDeserializer<>(CCPaymentEntity.class);
+		deserialize.setRemoveTypeHeaders(false);
+		deserialize.addTrustedPackages("*");
+		deserialize.setUseTypeMapperForKey(true);
+	       Map<String, Object> map
+           = new HashMap<>();
+
+       // put the host IP in the map
+       map.put(ConsumerConfig
+                   .BOOTSTRAP_SERVERS_CONFIG,
+               "127.0.0.1:9092");
+
+       // put the group ID of consumer in the map
+       map.put(ConsumerConfig
+                   .GROUP_ID_CONFIG,
+               "id");
+       map.put(ConsumerConfig
+                   .KEY_DESERIALIZER_CLASS_CONFIG,
+               StringDeserializer.class);
+       map.put(ConsumerConfig
+                   .VALUE_DESERIALIZER_CLASS_CONFIG,
+               deserialize);
+       map.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,"latest");
+       // return message in JSON formate
+       return new DefaultKafkaConsumerFactory<>(map, new StringDeserializer(), deserialize);
+	}
+	
+	@Bean
+    public ConcurrentKafkaListenerContainerFactory<String,CryptoPaymentEntity> cryptoListener(){
+        ConcurrentKafkaListenerContainerFactory<String,CryptoPaymentEntity> factory
         = new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(transactionConsumer());
+        factory.setConsumerFactory(cryptoFactory());
+        return factory;
+    }
+	
+	@Bean
+    public ConcurrentKafkaListenerContainerFactory<String,CCPaymentEntity> ccListener(){
+        ConcurrentKafkaListenerContainerFactory<String,CCPaymentEntity> factory
+        = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(ccFactory());
         return factory;
     }
 

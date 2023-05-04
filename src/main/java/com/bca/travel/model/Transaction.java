@@ -8,7 +8,7 @@ import java.sql.Timestamp;
 
 @Data
 @Entity
-@Table
+@Table(name="transactiondata")
 public class Transaction {
 
     @Id
@@ -25,5 +25,13 @@ public class Transaction {
     private Timestamp transactionDate;
     @Column(name = "quantity")
     private Integer quantity;
+    @Column(name="currency")
+    private String currency;
+    @Column(name="ammount")
+    private Double ammount;
+    @Column(name="type")
+    private String type;
+    @Column(name="status")
+    private String status;
 
 }

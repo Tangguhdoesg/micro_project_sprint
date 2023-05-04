@@ -1,6 +1,5 @@
 package com.bca.travel.services;
 
-import com.bca.travel.model.HolidayPackage;
 import com.bca.travel.model.Transaction;
 import com.bca.travel.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +22,7 @@ public class TransactionService {
     }
 
     public List<Transaction> findAll(){
-        return transactionRepo.findAll();
+        return transactionRepo.customFindAll();
     }
 
     public void delete(Transaction transaction){

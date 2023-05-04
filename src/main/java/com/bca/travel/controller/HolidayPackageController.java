@@ -2,6 +2,8 @@ package com.bca.travel.controller;
 
 import com.bca.travel.model.HolidayPackage;
 import com.bca.travel.repository.HolidayPackageRepository;
+import com.bca.travel.services.HolidayPackageService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -13,45 +15,46 @@ import java.util.List;
 @RequestMapping("holidayPackage")
 public class HolidayPackageController {
 
-    @Autowired
-    private HolidayPackageRepository holidayPackageRepository;
+	@Autowired
+	private HolidayPackageService holidayService;
 
     @GetMapping("/all")
     @ResponseStatus(HttpStatus.OK)
     public List<HolidayPackage> getAll(){
-        List<HolidayPackage> x = holidayPackageRepository.findAll();
+        List<HolidayPackage> x = holidayService.findAll();
         return x;
     }
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public HolidayPackage getHolidayPackageById(@PathVariable("id") Integer id){
-       return holidayPackageRepository.findById(id).get();
+       return holidayService.findById(id);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public String deleteHolidayPackage(@PathVariable("id") Integer id){
-        holidayPackageRepository.deleteById(id);
+    	HolidayPackage data = getHolidayPackageById(id);
+        holidayService.delete(data);
         return "Delete Succesfull";
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
     public HolidayPackage createPackage(@RequestBody HolidayPackage holiPackage){
-        return holidayPackageRepository.save(holiPackage);
+        return holidayService.save(holiPackage);
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public HolidayPackage updatePackage(@PathVariable("id") Integer id, @RequestBody HolidayPackage holiPackage){
-        HolidayPackage oldPackage = holidayPackageRepository.findById(id).get();
+        HolidayPackage oldPackage = holidayService.findById(id);
 
         oldPackage.setPackageName(holiPackage.getPackageName());
         oldPackage.setPackageInformation(holiPackage.getPackageInformation());
         oldPackage.setPackagePrice((holiPackage.getPackagePrice()));
 
-        return holidayPackageRepository.save(oldPackage);
+        return holidayService.save(oldPackage);
 
     }
 

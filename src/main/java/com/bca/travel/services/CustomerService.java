@@ -18,7 +18,6 @@ public class CustomerService {
     }
 
     public Customer findById(Integer id){
-        System.out.println("OK DARI SERVICE");
         return customerRepo.findById(id).get();
     }
 
