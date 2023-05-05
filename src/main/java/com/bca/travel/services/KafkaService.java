@@ -8,7 +8,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import com.bca.travel.model.CCPaymentEntity;
-import com.bca.travel.model.CryptoPaymentEntity;
+import com.bca.travel.model.CryptoPayemntGatewayAuth;
 import com.bca.travel.model.Transaction;
 import com.bca.travel.repository.TransactionRepository;
 
@@ -18,7 +18,7 @@ public class KafkaService {
 	@Autowired TransactionRepository transRepo;
 	
 	@Autowired
-    private KafkaTemplate<String, CryptoPaymentEntity>kafkaTemplateCryp;
+    private KafkaTemplate<String, CryptoPayemntGatewayAuth>kafkaTemplateCryp;
 	
 	@Autowired
     private KafkaTemplate<String, CCPaymentEntity>kafkaTemplateCc;
@@ -31,17 +31,16 @@ public class KafkaService {
 			  partitionOffsets = {
 			    @PartitionOffset(partition = "0", initialOffset = "0")}),
 			  containerFactory = "cryptoListener")
-	public void consumeResponseCrypto(CryptoPaymentEntity crypto) {
+	public void consumeResponseCrypto(CryptoPayemntGatewayAuth crypto) {
 		if(crypto.getMessageType().equalsIgnoreCase("Response")) {
+//			update transaction
 			Transaction transaction = transRepo.findById(crypto.getPaymentId()).get();
 			if(transaction==null) {
 				return;
 			}
 			transaction.setStatus(crypto.getStatus());
-			
 			transRepo.save(transaction);
-		}else {
-			
+
 		}
 	}
 	
@@ -64,7 +63,7 @@ public class KafkaService {
 		}
 	}
 	
-	public String paymentCrypto(CryptoPaymentEntity payment) {
+	public String paymentCrypto(CryptoPayemntGatewayAuth payment) {
 		
 		kafkaTemplateCryp.send(TOPICRYP,payment);
 		return "ok";

@@ -8,7 +8,7 @@ import jakarta.persistence.Table;
 import lombok.Data;
 
 @Data
-public class CryptoPaymentEntity {
+public class CryptoPayemntGatewayAuth {
 	
 	private String messageType;
     private String merchantName;

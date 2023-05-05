@@ -1,7 +1,7 @@
 package com.bca.travel.controller;
 
 import com.bca.travel.model.CCPaymentEntity;
-import com.bca.travel.model.CryptoPaymentEntity;
+import com.bca.travel.model.CryptoPayemntGatewayAuth;
 import com.bca.travel.model.Customer;
 import com.bca.travel.model.Transaction;
 import com.bca.travel.services.CustomerService;
@@ -72,23 +72,24 @@ public class TransactionController {
     	Customer dataCustomer = custServ.findById(tran.getCustomerId());
     	System.out.println("INI TRANS TYPE : " + tran.getType());
     	if(tran.getType().equalsIgnoreCase("Crypto")) {
-        	CryptoPaymentEntity cryptoEntity = new CryptoPaymentEntity();
+        	CryptoPayemntGatewayAuth cryptoEntity = new CryptoPayemntGatewayAuth();
         	cryptoEntity.setAccountNumber(dataCustomer.getAccountNumber());
-        	cryptoEntity.setMessageType("Response");
+        	cryptoEntity.setMessageType("Request");
         	cryptoEntity.setMerchantName("TRAVEL APPLICATION");
-        	cryptoEntity.setOriginalCurrency("IDR");
+//        	cryptoEntity.setOriginalCurrency(tran.getCurrency()); //what is this
+        	cryptoEntity.setOriginalCurrency("BTC"); //what is this
         	cryptoEntity.setAmount(tran.getTotalPrice().doubleValue());
-        	cryptoEntity.setTransactionType("CRYPTO");
+        	cryptoEntity.setTransactionType("Sell");
         	cryptoEntity.setReferenceNumber(UUID.randomUUID().toString());
         	cryptoEntity.setCardPaymentId(dataCustomer.getCryptoWalletId());
         	cryptoEntity.setCurrency(tran.getCurrency());
-        	cryptoEntity.setAmount(tran.getAmmount());
+        	
         	cryptoEntity.setConversionRate(Double.valueOf("10"));
         	cryptoEntity.setTransactionDate(new Date());
         	cryptoEntity.setStatus(tran.getStatus());
-//        	cryptoEntity.setStatus("SUCCESS");
         	cryptoEntity.setTranCode("CYP");
         	cryptoEntity.setPaymentId(tran.getId());
+        	cryptoEntity.setOriginalAmount(tran.getAmmount());
         	
         	kafkaService.paymentCrypto(cryptoEntity);
     	}else {

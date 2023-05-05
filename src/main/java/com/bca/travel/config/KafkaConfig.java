@@ -20,14 +20,14 @@ import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 
 import com.bca.travel.model.CCPaymentEntity;
-import com.bca.travel.model.CryptoPaymentEntity;
+import com.bca.travel.model.CryptoPayemntGatewayAuth;
 
 @EnableKafka
 @Configuration
 public class KafkaConfig {
 	
 	@Bean
-    public ProducerFactory<String, CryptoPaymentEntity>
+    public ProducerFactory<String, CryptoPayemntGatewayAuth>
     producerFactoryCrypto()
     {
         Map<String, Object> config
@@ -71,7 +71,7 @@ public class KafkaConfig {
     }
   
     @Bean
-    public KafkaTemplate<String, CryptoPaymentEntity>
+    public KafkaTemplate<String, CryptoPayemntGatewayAuth>
     kafkaTemplateCrypto(){
         return new KafkaTemplate<>(
         		producerFactoryCrypto());
@@ -85,8 +85,8 @@ public class KafkaConfig {
     }
 	
 	@Bean
-	public ConsumerFactory<String, CryptoPaymentEntity> cryptoFactory(){
-		JsonDeserializer<CryptoPaymentEntity> deserialize = new JsonDeserializer<>(CryptoPaymentEntity.class);
+	public ConsumerFactory<String, CryptoPayemntGatewayAuth> cryptoFactory(){
+		JsonDeserializer<CryptoPayemntGatewayAuth> deserialize = new JsonDeserializer<>(CryptoPayemntGatewayAuth.class);
 		deserialize.setRemoveTypeHeaders(false);
 		deserialize.addTrustedPackages("*");
 		deserialize.setUseTypeMapperForKey(true);
@@ -143,8 +143,8 @@ public class KafkaConfig {
 	}
 	
 	@Bean
-    public ConcurrentKafkaListenerContainerFactory<String,CryptoPaymentEntity> cryptoListener(){
-        ConcurrentKafkaListenerContainerFactory<String,CryptoPaymentEntity> factory
+    public ConcurrentKafkaListenerContainerFactory<String,CryptoPayemntGatewayAuth> cryptoListener(){
+        ConcurrentKafkaListenerContainerFactory<String,CryptoPayemntGatewayAuth> factory
         = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(cryptoFactory());
         return factory;
